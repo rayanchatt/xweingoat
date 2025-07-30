@@ -17,7 +17,7 @@ from fp_classes import environment, agent
 # 1) Umfeld + Agent initialisieren
 # ------------------------------------------------------------
 env = environment()
-learner = agent(env, D=0.25)           # <<<  hier D variieren
+learner = agent(env, D=0.05)           # <<<  hier D variieren
 learner.N_episodes = 20_000
 learner.tmax_MSD  = 100
 
