@@ -1,62 +1,50 @@
 import numpy as np
 
+
 class environment:
-	def __init__(self):
-		self.N_states = 100
-		self.target_position = 8
-		self.starting_position = 30
-		
-		self.obstacle_interval = np.arange(9,12)
-		self.P_obstacle = 0.0
-	
+    """Sehr einfaches 1-D-Umfeld – reicht für das MSD-Experiment."""
+    def __init__(self):
+        self.N_states          = 100          # Länge der x-Achse
+        self.target_position   = 8            # hier ohne Bedeutung
+        self.starting_position = 30           # Start-x für jede Episode
+
+        # Hindernis-Parameter (für spätere Aufgaben)
+        self.obstacle_interval = np.arange(9, 12)
+        self.P_obstacle        = 0.0
+
+
 class agent:
-	def __init__(self,env_):
-		self.N_episodes = None
-		self.tmax_MSD = None
-		
-		self.x = 1
-		self.Q = np.zeros((env_.N_states,3))
-		self.alpha = None
-		self.gamma = None
-		self.epsilon = 1.0
-		self.target_reward = 10.0
-		self.zero_fraction = 0.9
+    """
+    Teilchen, das sich rein diffus bewegt.
+    Weitere RL-Methoden (Q-Learning, stoch_obstacle …) kannst du später ergänzen.
+    """
+    def __init__(self, env_: environment, D: float = 0.25):
+        # -----------------  MSD-relevante Attribute  -----------------
+        self.D           = D                         # vorgegebene Diffusions­konstante
+        self.P_diffstep  = 2 * self.D                # Schritt-Wahrscheinlichkeit (a = τ = 1)
+        self.x           = env_.starting_position    # aktuelle Position
+        self.traj: list[int] = []                    # speichert x(t) einer Episode
+        # -------------------------------------------------------------
+        self.N_episodes  = None                      # wird im Hauptskript gesetzt
+        self.tmax_MSD    = None
 
-		self.D = 0.05
-		self.P_diffstep = None
-		
-		self.x_old = None
-		
-		if self.P_diffstep > 1.0:
-			print(f"self.P_step = {self.P_step} > 1.0 in agent.__init__(...)")
-			print("Diffusion constant self.D possibly too large. Pick a smaller self.D.")
-			exit()
-	
-	def random_step(self):
-		pass
-		
-	def adjust_epsilon(self,episode):
-		pass
-		    
-	def choose_action(self):
-		"""
-		wählt eine Zufallsaktion aus mit Wahrscheinlichkeit self.epsilon oder falls zwei Aktionen die höchsten Q-Werte haben.
-		Andernfalls wird der höchste Wert in der jeweiligen Zeile ausgewählt.
-		"""
-		pass
-	def perform_action(self,env_):
-		"""
-		Hier werden die Aktionen ausgeführt. Der Index der Aktion entspricht der Verschiebung auf der x-Achse + 1
-		"""
+    # ----------  Diffusionsschritt  ---------------------------------
+    def random_step(self) -> None:
+        """Mit Wahrscheinlichkeit P_diffstep einen Schritt ±1; sonst bleibt x gleich."""
+        if np.random.rand() < self.P_diffstep:
+            self.x += np.random.choice((-1, 1))
+        # Position in Trajektorie ablegen (wichtig für MSD-Berechnung)
+        self.traj.append(self.x)
 
-		pass
-	
-	def update_Q(self,env_):
-		"""
-		Hier werden die Werte der Q-Matrix nach jeder Aktion entsprechend aktualisiert
-		"""
-		pass
-	
-	def stoch_obstacle(self,env_):
-		pass
+    # ----------  Platzhalter für spätere RL-Aufgaben  ---------------
+    def choose_action(self, env_: environment):
+        pass
 
+    def exec_action(self, env_: environment):
+        pass
+
+    def update_Q(self, env_: environment):
+        pass
+
+    def stoch_obstacle(self, env_: environment):
+        pass
