@@ -1,6 +1,3 @@
-import os
-print("DEBUG: Aktives Skript =", os.path.abspath(__file__))
-
 import numpy as np
 
 
