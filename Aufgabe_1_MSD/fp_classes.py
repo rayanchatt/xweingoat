@@ -1,3 +1,7 @@
+import os
+print("DEBUG: Aktives Skript =", os.path.abspath(__file__))
+print("DEBUG: Wert von D =", learner.D)
+
 import numpy as np
 
 
