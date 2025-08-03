@@ -3,9 +3,16 @@ Aufgabe 2 – Q-Learning mit ε-greedy-Strategie
 
 Der Agent lernt mittels tabellarischem Q-Learning mit festen Parametern.
 """
+import matplotlib
+matplotlib.use("Agg")        # Headless backend – notwendig für GIF‑Erstellung
 import numpy as np
 import matplotlib.pyplot as plt
 from fp_classes import environment, agent
+from celluloid import Camera          # Celluloid‑GIF laut Aufgabenstellung
+from datetime import datetime
+
+# Zeitstempel für Dateien
+now = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
 # ------------------------------------------------------------
 # 1) Umfeld + Agent initialisieren
@@ -56,8 +63,40 @@ plt.legend()
 plt.grid()
 plt.tight_layout()
 plt.savefig("aufgabe2_learning_curve.png")
-plt.show()
-from datetime import datetime
-now = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+# plt.show()    # im Agg‑Backend nicht interaktiv
+
+# ------------------------------------------------------------
+# 4) Demo‑Episode filmen (GIF)  –  Celluloid
+# ------------------------------------------------------------
+fig2, ax2 = plt.subplots(figsize=(8, 2))
+ax2.set_ylim(-0.5, 0.5)
+ax2.set_xlim(0, env.N_states - 1)
+ax2.set_yticks([])
+ax2.set_xlabel("x‑Position (Zustand)")
+ax2.set_title("Agenten‑Trajektorie – Q‑Policy (greedy)")
+ax2.axvline(env.target_position, color="g", linestyle="--")
+
+camera = Camera(fig2)
+
+# Greedy‑Policy aufnehmen
+learner.epsilon = 0.0
+learner.x = env.starting_position
+
+for _ in range(2 * env.N_states):
+    ax2.plot(learner.x, 0, "ro")        # Agent
+    camera.snap()
+
+    learner.choose_action(env)
+    learner.perform_action(env)
+
+    if learner.x == env.target_position:
+        ax2.plot(learner.x, 0, "ro")
+        camera.snap()
+        break
+
+gif_name = f"aufgabe2_trajectory_{now}.gif"
+camera.animate().save(gif_name, writer="pillow", fps=4)
+print(f"GIF gespeichert als {gif_name}")
+
 with open(f'Q_MATRIX_{now}.txt', 'w') as f:
     f.write(str(learner.Q))

@@ -45,10 +45,12 @@ class agent:
 
     def choose_action(self, env_: environment) -> None:
         if np.random.rand() < self.epsilon:
+            # Zufallswahl (0 = links, 1 = stehen, 2 = rechts)
             self.chosen_action = np.random.randint(3)
         else:
             max_indices = np.argwhere(self.Q[self.x] == np.max(self.Q[self.x])).flatten()
-            self.chosen_action = np.random.choice(max_indices)
+            # Immer den kleinsten Index nehmen, damit bei Gleichstand Vorrang "links"
+            self.chosen_action = int(np.min(max_indices))
 
     def perform_action(self, env_: environment) -> float:
         """Führt die gewählte Aktion aus und gibt die Belohnung zurück."""
