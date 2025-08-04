@@ -16,7 +16,7 @@ class environment:
 class agent:
     """
     Agent, der mittels Q-Learning lernt, sich in der Umgebung optimal zu bewegen.
-    Die Klasse implementiert grundlegende Funktionen für ε-greedy Aktionsauswahl,
+    Die Klasse implementiert grundlegende Funktionen für epsilon-greedy Aktionsauswahl,
     Ausführung von Aktionen und Aktualisierung der Q-Werte.
     """
     def __init__(self, env_: environment, D: float = 0.25):
@@ -33,8 +33,8 @@ class agent:
         self.chosen_action = None
         self.target_reward = 1.0
 
-        # Wahrscheinlichkeit für einen zufälligen Diffusionsschritt (Aufgabe 2 – Schritt 3)
-        self.P_diffstep = 2 * self.D    # a = τ = 1  ⇒  P = 2D
+        # Wahrscheinlichkeit für einen zufälligen Diffusionsschritt (Aufgabe 2, Schritt 3)
+        self.P_diffstep = 2 * self.D    # a = tau = 1  ⇒  P = 2D
 
     def adjust_epsilon(self, episode: int) -> None:
         zero_episode = int(self.zero_fraction * self.N_episodes)
@@ -69,7 +69,7 @@ class agent:
     # Diffusionsschritt – reiner Zufall (← oder →)
     # ==============================================
     def random_step(self) -> None:
-        """Mit Wahrscheinlichkeit P_diffstep einen Schritt ±1 (periodische Ränder)."""
+        """Mit Wahrscheinlichkeit P_diffstep einen Schritt +-1 (periodische Ränder)."""
         if np.random.rand() < self.P_diffstep:
             step = np.random.choice((-1, 1))
             self.x = (self.x + step) % self.Q.shape[0]   # periodisch über N_states

@@ -4,7 +4,7 @@ Aufgabe 2 – Q-Learning mit ε-greedy-Strategie
 Der Agent lernt mittels tabellarischem Q-Learning mit festen Parametern.
 """
 import matplotlib
-matplotlib.use("Agg")        # Headless backend – notwendig für GIF‑Erstellung
+matplotlib.use("Agg")        # Headless backend notwendig für GIF‑Erstellung
 import numpy as np
 import matplotlib.pyplot as plt
 from fp_classes import environment, agent
@@ -35,10 +35,10 @@ for episode in range(learner.N_episodes):
     learner.x = env.starting_position
     episode_reward = 0
 
-    for t in range(1000):                       # längere Episode → höhere Chance aufs Ziel
+    for t in range(1000):                       # längere Episode höhere Chance aufs Ziel
         old_x = learner.x
 
-        learner.choose_action(env)              # ε‑greedy Aktion wählen
+        learner.choose_action(env)              # epsilon‑greedy Aktion wählen
         learner.random_step()                   # zufälliger Diffusionsschritt
         reward = learner.perform_action(env)    # Aktion ausführen, Reward erhalten
         learner.update_Q(old_x, reward)         # Q‑Update

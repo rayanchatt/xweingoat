@@ -16,7 +16,6 @@ class environment:
 class agent:
     """
     Teilchen, das sich rein diffus bewegt.
-    Weitere RL-Methoden (Q-Learning, stoch_obstacle …) kannst du später ergänzen.
     """
     def __init__(self, env_: environment, D: float = 0.25):
         # -----------------  MSD-relevante Attribute  -----------------
