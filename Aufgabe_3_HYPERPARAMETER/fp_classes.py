@@ -25,7 +25,7 @@ class agent:
         self.traj: list[int] = []                    # speichert x(t) einer Episode
         self.N_episodes  = None                      # wird im Hauptskript gesetzt
         self.tmax_MSD    = None
-        self.Q = np.zeros((env_.N_states, 3))  # Q(s,a) für a=-1,0,+1 → a_idx = a + 1
+        self.Q = np.zeros((env_.N_states, 3))
         self.epsilon = 0.1
         self.alpha = 0.2
         self.gamma = 0.9
@@ -36,8 +36,8 @@ class agent:
         # Zustand, dessen Q-Werte wir über die Zeit mitloggen
         self.output_state = 30
 
-        # Wahrscheinlichkeit für einen zufälligen Diffusionsschritt (Aufgabe 2 – Schritt 3)
-        self.P_diffstep = 2 * self.D    # a = τ = 1  ⇒  P = 2D
+        # Wahrscheinlichkeit für einen zufälligen Diffusionsschritt
+        self.P_diffstep = 2 * self.D    # a = tau = 1, P = 2D
 
     def adjust_epsilon(self, episode: int) -> None:
         zero_episode = int(self.zero_fraction * self.N_episodes)
@@ -68,18 +68,16 @@ class agent:
         max_Q = np.max(self.Q[self.x])
         self.Q[x_old, a_idx] += self.alpha * (reward + self.gamma * max_Q - self.Q[x_old, a_idx])
 
-    # ==============================================
-    # Diffusionsschritt – reiner Zufall (← oder →)
-    # ==============================================
+    # Diffusionsschritt
     def random_step(self) -> None:
-        """Mit Wahrscheinlichkeit P_diffstep einen Schritt ±1 (periodische Ränder)."""
+        """Mit Wahrscheinlichkeit P_diffstep einen Schritt (periodische Ränder)."""
         if np.random.rand() < self.P_diffstep:
             step = np.random.choice((-1, 1))
             self.x = (self.x + step) % self.Q.shape[0]   # periodisch über N_states
 
     def stoch_obstacle(self, env_: environment) -> None:
         """
-        Stochastisches Hindernis (Aufgabe 5.4):
+        Stochastisches Hindernis (Aufgabe 5.4):
         Befindet sich der Agent im Hindernis-Band, verschiebt ihn das Hindernis
         mit Wahrscheinlichkeit env_.P_obstacle um 1 Position nach links.
         """

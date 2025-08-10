@@ -3,13 +3,12 @@ import numpy as np
 
 class environment:
     """Umgebung für das Q-Learning-Experiment mit diskreten Zuständen und Aktionen.
-    Hindernis‑Band 9–11 mit Verschiebung nach links."""
+    Hindernisband 9-11 mit Verschiebung nach links."""
     def __init__(self):
         self.N_states          = 15           # Ring‑länge 15, Ziel = 12, Start = 8
         self.target_position   = 12           # Zielposition für den Agenten
         self.starting_position = 8            # Start-x für jede Episode
 
-        # Hindernis-Parameter (für spätere Aufgaben)
         self.obstacle_interval = np.arange(9, 12)
         self.P_obstacle        = 0.0
 
@@ -17,7 +16,7 @@ class environment:
 class agent:
     """
     Agent, der mittels Q-Learning lernt, sich in der Umgebung optimal zu bewegen.
-    Die Klasse implementiert grundlegende Funktionen für ε-greedy Aktionsauswahl,
+    Die Klasse implementiert grundlegende Funktionen für epsilon-greedy Aktionsauswahl,
     Ausführung von Aktionen und Aktualisierung der Q-Werte.
     """
     def __init__(self, env_: environment, D: float = 0.00):
@@ -26,7 +25,7 @@ class agent:
         self.traj: list[int] = []                    # speichert x(t) einer Episode
         self.N_episodes  = None                      # wird im Hauptskript gesetzt
         self.tmax_MSD    = None
-        self.Q = np.zeros((env_.N_states, 3))  # Q(s,a) für a=-1,0,+1 → a_idx = a + 1
+        self.Q = np.zeros((env_.N_states, 3))
         self.epsilon = 0.1
         self.alpha = 0.2
         self.gamma = 0.9
@@ -37,8 +36,8 @@ class agent:
         # Zustand, dessen Q-Werte wir über die Zeit mitloggen
         self.output_state = 30
 
-        # Wahrscheinlichkeit für einen zufälligen Diffusionsschritt (Aufgabe 2 – Schritt 3)
-        self.P_diffstep = 2 * self.D    # a = τ = 1  ⇒  P = 2D
+        # Wahrscheinlichkeit für einen zufälligen Diffusionsschritt
+        self.P_diffstep = 2 * self.D    # a = tau = 1, P = 2D
 
     def adjust_epsilon(self, episode: int) -> None:
         zero_episode = int(self.zero_fraction * self.N_episodes)
@@ -69,9 +68,7 @@ class agent:
         max_Q = np.max(self.Q[self.x])
         self.Q[x_old, a_idx] += self.alpha * (reward + self.gamma * max_Q - self.Q[x_old, a_idx])
 
-    # ==============================================
-    # Diffusionsschritt – reiner Zufall (← oder →)
-    # ==============================================
+    # Diffusionsschritt
     def random_step(self) -> None:
         """Mit Wahrscheinlichkeit P_diffstep einen Schritt ±1 (periodische Ränder)."""
         if np.random.rand() < self.P_diffstep:
