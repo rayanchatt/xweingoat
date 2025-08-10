@@ -2,14 +2,15 @@ import numpy as np
 
 
 class environment:
-    """Umgebung für das Q-Learning-Experiment mit diskreten Zuständen und Aktionen."""
+    """Umgebung für das Q-Learning-Experiment mit diskreten Zuständen und Aktionen.
+    Hindernis‑Band 9–11 mit Verschiebung nach links."""
     def __init__(self):
-        self.N_states          = 15           # Ring-Länge
-        self.target_position   = 12           # Ziel bei x = 12
-        self.starting_position = 8            # Start bei x = 8
+        self.N_states          = 15           # Ring‑länge 15, Ziel = 12, Start = 8
+        self.target_position   = 12           # Zielposition für den Agenten
+        self.starting_position = 8            # Start-x für jede Episode
 
         # Hindernis-Parameter (für spätere Aufgaben)
-        self.obstacle_interval = np.arange(9, 12)  # Hindernis-Band 9–11
+        self.obstacle_interval = np.arange(9, 12)
         self.P_obstacle        = 0.0
 
 
@@ -79,9 +80,10 @@ class agent:
 
     def stoch_obstacle(self, env_: environment) -> None:
         """
-        Stochastisches Hindernis (Aufgabe 5.4):
-        Befindet sich der Agent im Hindernis-Band, verschiebt ihn das Hindernis
-        mit Wahrscheinlichkeit env_.P_obstacle um 1 Position nach links.
+        Stochastisches Hindernis:
+        Befindet sich der Agent in env_.obstacle_interval, so wird er mit
+        Wahrscheinlichkeit env_.P_obstacle um 1 nach links verschoben
+        (periodische Randbedingungen).
         """
         if self.x in env_.obstacle_interval and np.random.rand() < env_.P_obstacle:
             self.x = (self.x - 1) % env_.N_states
