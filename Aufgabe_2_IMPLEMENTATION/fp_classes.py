@@ -2,27 +2,21 @@ import numpy as np
 
 
 class environment:
-    """Umgebung für das Q-Learning-Experiment mit diskreten Zuständen und Aktionen."""
     def __init__(self):
-        self.N_states          = 100          # Länge der x-Achse
-        self.target_position   = 8            # Zielposition für den Agenten
-        self.starting_position = 30           # Start-x für jede Episode
+        self.N_states          = 100
+        self.target_position   = 8
+        self.starting_position = 30
 
         self.obstacle_interval = np.arange(9, 12)
         self.P_obstacle        = 0.0
 
 
 class agent:
-    """
-    Agent, der mittels Q-Learning lernt, sich in der Umgebung optimal zu bewegen.
-    Die Klasse implementiert grundlegende Funktionen für epsilon-greedy Aktionsauswahl,
-    Ausführung von Aktionen und Aktualisierung der Q-Werte.
-    """
     def __init__(self, env_: environment, D: float = 0.25):
-        self.D           = D                         # Diffusionskonstante (nicht mehr für MSD verwendet)
-        self.x           = env_.starting_position    # aktuelle Position
-        self.traj: list[int] = []                    # speichert x(t) einer Episode
-        self.N_episodes  = None                      # wird im Hauptskript gesetzt
+        self.D           = D
+        self.x           = env_.starting_position
+        self.traj: list[int] = []
+        self.N_episodes  = None
         self.tmax_MSD    = None
         self.Q = np.zeros((env_.N_states, 3))
         self.epsilon = 0.1
@@ -52,7 +46,9 @@ class agent:
             self.chosen_action = int(np.min(max_indices))
 
     def perform_action(self, env_: environment) -> float:
-        """Führt die gewählte Aktion aus und gibt die Belohnung zurück."""
+        """
+		Hier werden die Aktionen ausgeführt. Der Index der Aktion entspricht der Verschiebung auf der x-Achse + 1
+		"""
         a = self.chosen_action - 1
         self.x = (self.x + a) % env_.N_states
         if self.x == env_.target_position and self.chosen_action == 1:
@@ -60,13 +56,15 @@ class agent:
         return 0.0
 
     def update_Q(self, x_old: int, reward: float) -> None:
+        """
+		Hier werden die Werte der Q-Matrix nach jeder Aktion entsprechend aktualisiert
+		"""
         a_idx = self.chosen_action
         max_Q = np.max(self.Q[self.x])
         self.Q[x_old, a_idx] += self.alpha * (reward + self.gamma * max_Q - self.Q[x_old, a_idx])
 
     # Diffusionsschritt
     def random_step(self) -> None:
-        """Mit Wahrscheinlichkeit P_diffstep einen Schritt +-1 (periodische Ränder)."""
         if np.random.rand() < self.P_diffstep:
             step = np.random.choice((-1, 1))
             self.x = (self.x + step) % self.Q.shape[0]   # periodisch über N_states

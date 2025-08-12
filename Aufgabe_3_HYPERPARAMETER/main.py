@@ -26,7 +26,7 @@ ZERO_FRACTION = 0.3
 
 
 def run_one_experiment(D_val, alpha_val, tag):
-    # 1) Umgebung + Agent
+    # Umgebung + Agent
     env = environment()
     learner = agent(env, D=D_val)
     learner.N_episodes    = N_EPISODES
@@ -40,7 +40,7 @@ def run_one_experiment(D_val, alpha_val, tag):
     else:
         STATE_TO_LOG = env.N_states // 2  # Mitte des Rings als Default
 
-    # 2) Training
+    # Training
     steps_per_episode = []
     ratios = []
     Q_VALUES_OVER_TIME = []
@@ -66,7 +66,7 @@ def run_one_experiment(D_val, alpha_val, tag):
             # Q-Linie des gewählten Zustands protokollieren
             Q_VALUES_OVER_TIME.append(learner.Q[STATE_TO_LOG].copy())
 
-            if reward > 0:  # Ziel erreicht
+            if reward > 0:
                 break
 
         steps_per_episode.append(step_counter)
@@ -76,7 +76,7 @@ def run_one_experiment(D_val, alpha_val, tag):
         min_steps = min(dist_left, dist_right) + 1
         ratios.append(step_counter / min_steps)
 
-    # 3) Lernkurve (Schritte pro Episode, log)
+    #Lernkurve (Schritte pro Episode, log)
     plt.figure()
     plt.semilogy(steps_per_episode, '.')
     plt.xlabel("Episode")
@@ -86,7 +86,7 @@ def run_one_experiment(D_val, alpha_val, tag):
     plt.savefig(f"Aufgabe 5.3 Lernkurve Schritte {tag} {NAME} {now}.png")
     plt.close()
 
-    # 4) Verhältnis Schritte / Minimaldistanz
+    #Verhältnis Schritte / Minimaldistanz
     plt.figure()
     plt.plot(ratios, '.')
     plt.xlabel("Episode")
@@ -96,7 +96,7 @@ def run_one_experiment(D_val, alpha_val, tag):
     plt.savefig(f"Aufgabe 5.3 Lernkurve Ratio {tag} {NAME} {now}.png")
     plt.close()
 
-    # 5) Q-Werte des Zustands STATE_TO_LOG über die Zeit
+    #Q-Werte des Zustands STATE_TO_LOG über die Zeit
     Q_arr = np.array(Q_VALUES_OVER_TIME)
     plt.figure()
     plt.semilogy(Q_arr[:, 0], label="←")

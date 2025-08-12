@@ -1,9 +1,5 @@
 """
 Aufgabe 1: Mittleres Verschiebungsquadrat (MSD) mit Fit-Unsicherheit
-
-Starte dieses Skript mehrmals mit unterschiedlichen
-Werten von learner.D (z. B. 0.05, 0.25, 0.45)
-und vergleiche die gemessene Steigung mit 2D.
 """
 
 from datetime import datetime
@@ -15,7 +11,7 @@ from fp_classes import environment, agent
 
 # 1) Umfeld + Agent initialisieren
 env = environment()
-learner = agent(env, D=0.45)          # <<< hier D variieren
+learner = agent(env, D=0.45)
 learner.N_episodes = 20_000
 learner.tmax_MSD  = 100
 

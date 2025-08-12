@@ -2,7 +2,6 @@ import numpy as np
 
 
 class environment:
-    """Umgebung für das Q-Learning-Experiment mit diskreten Zuständen und Aktionen."""
     def __init__(self):
         self.N_states          = 15           # Ring-Länge
         self.target_position   = 12           # Ziel bei x = 12
@@ -14,11 +13,6 @@ class environment:
 
 
 class agent:
-    """
-    Agent, der mittels Q-Learning lernt, sich in der Umgebung optimal zu bewegen.
-    Die Klasse implementiert grundlegende Funktionen für ε-greedy Aktionsauswahl,
-    Ausführung von Aktionen und Aktualisierung der Q-Werte.
-    """
     def __init__(self, env_: environment, D: float = 0.00):
         self.D           = D                         # Diffusionskonstante (nicht mehr für MSD verwendet)
         self.x           = env_.starting_position    # aktuelle Position
@@ -47,6 +41,10 @@ class agent:
             self.epsilon = 0.0
 
     def choose_action(self, env_: environment) -> None:
+        """
+		wählt eine Zufallsaktion aus mit Wahrscheinlichkeit self.epsilon oder falls zwei Aktionen die höchsten Q-Werte haben.
+		Andernfalls wird der höchste Wert in der jeweiligen Zeile ausgewählt.
+		"""
         if np.random.rand() < self.epsilon:
             # Zufallswahl (0 = links, 1 = stehen, 2 = rechts)
             self.chosen_action = np.random.randint(3)
@@ -56,7 +54,9 @@ class agent:
             self.chosen_action = int(np.min(max_indices))
 
     def perform_action(self, env_: environment) -> float:
-        """Führt die gewählte Aktion aus und gibt die Belohnung zurück."""
+        """
+		Hier werden die Aktionen ausgeführt. Der Index der Aktion entspricht der Verschiebung auf der x-Achse + 1
+		"""
         a = self.chosen_action - 1
         self.x = (self.x + a) % env_.N_states
         if self.x == env_.target_position and self.chosen_action == 1:
@@ -64,22 +64,19 @@ class agent:
         return 0.0
 
     def update_Q(self, x_old: int, reward: float) -> None:
+        """
+		Hier werden die Werte der Q-Matrix nach jeder Aktion entsprechend aktualisiert
+		"""
         a_idx = self.chosen_action
         max_Q = np.max(self.Q[self.x])
         self.Q[x_old, a_idx] += self.alpha * (reward + self.gamma * max_Q - self.Q[x_old, a_idx])
 
     # Diffusionsschritt
     def random_step(self) -> None:
-        """Mit Wahrscheinlichkeit P_diffstep einen Schritt (periodische Ränder)."""
         if np.random.rand() < self.P_diffstep:
             step = np.random.choice((-1, 1))
             self.x = (self.x + step) % self.Q.shape[0]   # periodisch über N_states
 
     def stoch_obstacle(self, env_: environment) -> None:
-        """
-        Stochastisches Hindernis (Aufgabe 5.4):
-        Befindet sich der Agent im Hindernis-Band, verschiebt ihn das Hindernis
-        mit Wahrscheinlichkeit env_.P_obstacle um 1 Position nach links.
-        """
         if self.x in env_.obstacle_interval and np.random.rand() < env_.P_obstacle:
             self.x = (self.x - 1) % env_.N_states

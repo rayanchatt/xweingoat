@@ -1,7 +1,5 @@
 """
-Aufgabe 2: Q-Learning mit ε-greedy-Strategie
-
-Der Agent lernt mittels tabellarischem Q-Learning mit festen Parametern.
+Aufgabe 2: Q-Learning mit epsilon-greedy-Strategie
 """
 import matplotlib
 matplotlib.use("Agg")
@@ -11,15 +9,10 @@ from fp_classes import environment, agent
 from celluloid import Camera
 from datetime import datetime
 
-# ------------------------------------------------------------
-# Name + Zeitstempel für Dateien
-# ------------------------------------------------------------
 NAME = "Chatt_Weingart"
-now = datetime.now().strftime("%Y-%m-%dT%H %M %S")  # Format mit T + Leerzeichen
+now = datetime.now().strftime("%Y-%m-%dT%H %M %S")
 
-# ------------------------------------------------------------
-# 1) Umfeld + Agent initialisieren
-# ------------------------------------------------------------
+#Umfeld + Agent initialisieren
 env = environment()
 learner = agent(env, D=0.125)  # D so gewählt, dass P_diffstep ca. 0.25
 learner.N_episodes = 10_000
@@ -28,9 +21,7 @@ learner.alpha = 0.01
 learner.gamma = 0.9
 learner.zero_fraction = 0.3
 
-# ------------------------------------------------------------
-# 2) Trainingsschleife
-# ------------------------------------------------------------
+#Trainingsschleife
 rewards = []
 
 for episode in range(learner.N_episodes):
@@ -40,11 +31,10 @@ for episode in range(learner.N_episodes):
 
     for t in range(1000):
         old_x = learner.x
-
-        learner.choose_action(env)              # epsilon-greedy Aktion wählen
-        learner.random_step()                   # zufälliger Diffusionsschritt
-        reward = learner.perform_action(env)    # Aktion ausführen, Reward erhalten
-        learner.update_Q(old_x, reward)         # Q-Update
+        learner.choose_action(env)
+        learner.random_step()
+        reward = learner.perform_action(env)
+        learner.update_Q(old_x, reward)
         episode_reward += reward
 
         if learner.x == env.target_position and reward > 0:
@@ -52,9 +42,7 @@ for episode in range(learner.N_episodes):
 
     rewards.append(episode_reward)
 
-# ------------------------------------------------------------
-# 3) Ergebnisse plotten
-# ------------------------------------------------------------
+#Ergebnisse plotten
 window = 100
 rolling = np.convolve(rewards, np.ones(window) / window, mode='valid')
 
@@ -70,9 +58,7 @@ lc_name = f"Aufgabe 2 Lernkurve {NAME} {now}.png"
 plt.savefig(lc_name)
 print(f"Lernkurve gespeichert als {lc_name}")
 
-# ------------------------------------------------------------
-# 4) Demo-Episode
-# ------------------------------------------------------------
+#Demo-Episode
 fig2, ax2 = plt.subplots(figsize=(8, 2))
 ax2.set_ylim(-0.5, 0.5)
 ax2.set_xlim(0, env.N_states - 1)

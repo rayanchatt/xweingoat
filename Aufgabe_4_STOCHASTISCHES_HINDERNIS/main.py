@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from fp_classes import environment, agent
 
-# Parameter
+# Params
 N_EPISODES    = 20_000
 ALPHA         = 0.01
 GAMMA         = 0.9
@@ -15,9 +15,8 @@ ZERO_FRACTION = 0.3
 D_DIFFUSION   = 0.0
 
 # Sweep-Bereich
-P_VALUES = np.linspace(0, 1, 21)    # 0.00 … 1.00 (delta = 0.05)
+P_VALUES = np.linspace(0, 1, 21)
 
-# Name + Zeitstempel
 NAME = "Chatt_Weingart"
 NOW  = datetime.now().strftime("%Y-%m-%dT%H %M %S")
 
